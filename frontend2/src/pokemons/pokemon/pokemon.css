@@ -1,0 +1,55 @@
+#grid {
+	height: 200px;
+}
+
+#pokemonDetails {
+	background-color: lightgray;
+	border-radius: 5px;
+}
+
+#favIcon {
+	display: inline-block;
+}
+
+#NonfavIcon {
+	display: inline-block;
+	color: red;
+}
+
+#iconDiv {
+	display: grid;
+	justify-content: center;
+	align-items: center;
+}
+
+hr {
+	border: '3px solid lightblue';
+	border-radius: '15px';
+}
+
+button.ModalButton {
+	position: absolute;
+	bottom: 8px;
+	right: 16px;
+	border: none;
+	color: green !important;
+	border-radius: 5px;
+}
+
+button.CloseModalButton {
+	color: red;
+	border: none !important;
+	border-radius: 5px;
+}
+
+div.col-10 {
+	text-align: left;
+}
+
+div.col-md-3 {
+	margin: 10px 0px 10px 0px;
+}
+
+div.col-12, div.col-md-5 {
+	text-align: center;
+}

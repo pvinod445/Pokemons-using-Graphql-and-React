@@ -1,0 +1,46 @@
+table#pokemonDetailTable {
+	max-width: 500px;
+	margin: auto;
+}
+
+#pokemonDetails {
+	background-color: lightgray;
+	border-radius: 5px;
+}
+
+#evopokemonDetails {
+	background-color: lightgray;
+	height: 35px;
+}
+
+#pokeId {
+	border: 1px solid lightgray;
+	border-radius: 5px;
+	margin: 10px;
+}
+
+#pokeId .container-fluid {
+	padding: 0px;
+}
+
+#pokemonDetails div.row {
+	margin: 0px;
+}
+
+#favIcon {
+	color: red;
+}
+
+div#mainDiv {
+	text-align: center;
+	display: inline-table;
+}
+
+div#backButton {
+	text-align: left;
+}
+div#backButton a{
+	color: lightgreen !important;
+	text-decoration: underline !important;
+	font-weight: bold;
+}
