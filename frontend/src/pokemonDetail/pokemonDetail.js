@@ -28,9 +28,7 @@ class PokemonDetail extends Component {
 	 * @returns void
 	 */
 	getPokemon() {
-		let urlPath= window.location.pathname.split('/');
-		const pokemonName = urlPath[1];
-		this.setState({pokemonName: pokemonName});
+		const pokemonName = this.props.match.params.name;
 		const cache = new InMemoryCache();
 		const link = new HttpLink({
 			uri: 'http://localhost:4000/graphql'
@@ -51,8 +49,7 @@ class PokemonDetail extends Component {
 			}`
 		  }).then(response => {
 			this.setState({pokemon: response.data.pokemons.edges[0]});
-		})
-		.catch(error => {
+		}).catch(error => {
 			alert('Failed to reach the server. Please try again')
 		});
 	}
@@ -65,10 +62,10 @@ class PokemonDetail extends Component {
 			if(this.state.pokemon.evolutions.length) {
 				evolutions = this.state.pokemon.evolutions.map((evolution, index) => {
 					return(
-						<div key={index} className='col-md-4' style={{border: '1px solid lightgray', borderRadius: '5px'}} >
+						<div key={index} className='col-md-4' style={{border: '1px solid lightgray'}} >
 							<div className='row' style={{height: '200px'}}>
 								<div className='col-12' style={{padding: '5px 10px 5px 10px'}}>
-									<img src={evolution.image} height='100' width='100' />
+									<img alt='EvolutionImage' src={evolution.image} height='100' width='100' />
 								</div>
 							</div>
 
@@ -96,12 +93,12 @@ class PokemonDetail extends Component {
 						<Pokemon pokemon={this.state.pokemon} detail={true} isFav={queryParams.isFav} />
 					</div>
 					<br />
-					<div className='container-fluid' style={{width: '100%'}}>
+					<div className='container-fluid' style={{width: '100%', padding: '0px 10px 0px 10px'}}>
 						<div style={{textAlign: 'left'}}>
 							<h4>Evolutions</h4>
 						</div>
 
-						<div className='row' style={{marginBottom: '10px'}}>
+						<div className='row' style={{margin: '0px'}}>
 							{evolutions}
 						</div>
 					</div>

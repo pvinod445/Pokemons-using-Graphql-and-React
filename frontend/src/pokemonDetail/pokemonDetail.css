@@ -5,7 +5,7 @@ table#pokemonDetailTable {
 
 #pokemonDetails {
 	background-color: lightgray;
-	border-radius: 5px;
+	margin: 0px;
 }
 
 #evopokemonDetails {
@@ -40,7 +40,7 @@ div#backButton {
 	text-align: left;
 }
 div#backButton a{
-	color: lightgreen !important;
+	color: darkcyan !important;
 	text-decoration: underline !important;
 	font-weight: bold;
 }

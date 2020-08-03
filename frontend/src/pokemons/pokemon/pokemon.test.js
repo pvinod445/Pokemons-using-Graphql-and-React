@@ -3,16 +3,16 @@ import { shallow } from 'enzyme';
 import Pokemon from './pokemon';
 import Modal from 'react-modal';
 
-describe('pokemon', () => {
-	it('renders pokemon', () => {
+describe('Pokemon', () => {
+	it('Renders Pokemon', () => {
 		const props = {
 			pokemon: {
 				id: 1,
-				name: 'Pokemon Name',
+				name: 'Pikachu',
 				types: ['Fire'],
 				maxCP: 100,
 				maxHP: 200,
-				image: 'https://test.com'
+				image: 'https://pikachu.com'
 			}
 		}
 		const wrapper = shallow(<Pokemon {...props} />);
@@ -21,16 +21,24 @@ describe('pokemon', () => {
 		expect(wrapper.childAt(0).props().className).toEqual('row');
 	});
 
-	describe('when user clicks on quick view button', () => {
+	describe('When user clicks on quick view button', () => {
 		it('Should open modal', () => {
 			const props = {
 				pokemon: {
 					id: 1,
-					name: 'Pokemon Name',
+					name: 'Pikachu',
 					types: ['Fire'],
 					maxCP: 100,
 					maxHP: 200,
-					image: 'https://test.com'
+					image: 'https://pikachu.com',
+					weight: {
+						minimum: 10,
+						maximum: 15
+					},
+					height: {
+						minimum: 40,
+						maximum: 50
+					}
 				}
 			}
 			const wrapper = shallow(<Pokemon {...props} />);

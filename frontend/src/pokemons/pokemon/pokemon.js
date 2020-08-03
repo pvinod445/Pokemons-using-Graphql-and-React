@@ -21,6 +21,10 @@ class Pokemon extends Component {
 		audioEl.play()
 	}
 
+	/**
+	 * Toggles to open pokemon Detail in React Modal
+	 * @returns void
+	 */
 	toggleModal = () => {
 		this.setState({isOpen: !this.state.isOpen});
 	}
@@ -40,7 +44,7 @@ class Pokemon extends Component {
 		if(this.props.detail || this.state.isOpen) {
 			audioTag = (
 				<div className='autoTag'>
-					<BsVolumeUpFill onClick={this.playAudio} style={{position: 'absolute', bottom: '8px', left: '16px', color: 'lightgreen'}} />
+					<BsVolumeUpFill onClick={this.playAudio} style={{position: 'absolute', bottom: '8px', left: '16px', color: 'darkcyan'}} />
 					<audio className='audio-element'>
 						<source src={audioSrc}></source>
 					</audio>
@@ -49,7 +53,7 @@ class Pokemon extends Component {
 
 			pokemonDetail = (
 				<div id='pokemonDetails'>
-					<div  className='row' style={{marging: '0px'}}>
+					<div  className='row' style={{margin: '0px'}}>
 						<div className='col-10'>
 							{this.state.isOpen ? <b>{this.props.pokemon.name}</b> : (
 								<Link
@@ -70,13 +74,13 @@ class Pokemon extends Component {
 							{favIcon}
 						</div>
 						<div className='col-md-7'>
-							<hr style={{border: '3px solid lightblue', borderRadius: '15px'}} />
+							<hr style={{border: '3px solid cornflowerblue', borderRadius: '15px'}} />
 						</div>
 						<div className='col-md-5'>
 							<b>CP: {this.props.pokemon.maxCP}</b>
 						</div>
 						<div className='col-md-7'>
-							<hr style={{border: '3px solid lightgreen', borderRadius: '15px'}} />
+							<hr style={{border: '3px solid darkcyan', borderRadius: '15px'}} />
 						</div>
 						<div className='col-md-5'>
 							<b>HP: {this.props.pokemon.maxHP}</b>
@@ -122,7 +126,7 @@ class Pokemon extends Component {
 
 		return (
 			<div className='container-fluid'>
-				<div className='row' style={{height: '200px'}}>
+				<div className='row' style={{height: '200px', border: '1px solid lightgray', margin: '0px'}}>
 					<div className='col-12' style={{padding: '5px 10px 5px 10px'}}>
 						<Link
 							style={{textDecoration: 'none', color: 'black'}}

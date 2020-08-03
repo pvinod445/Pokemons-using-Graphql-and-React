@@ -61,8 +61,7 @@ class Pokemons extends Component {
 					edges { name, image, maxCP, maxHP, types, weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
 			  }
 			}`
-		}).
-		then(response => {
+		}).then(response => {
 			let pokemonTypes = [''];
 
 			response.data.pokemons.edges.forEach(pokemon => {
@@ -74,8 +73,7 @@ class Pokemons extends Component {
 		});
 
 			this.setState({pokemons: response.data.pokemons.edges, types: pokemonTypes});
-		})
-		.catch(error => {
+		}).catch(error => {
 			alert('Failed to reach the server. Please try again')
 		});
 	}
@@ -220,13 +218,16 @@ class Pokemons extends Component {
 			}
 			if(pokemon != null && this.filterCriterial(pokemon, this.state.selectedType.value)) {
 				return (
-					<div key={index} className={this.state.gridView ? 'col-md-3' : 'col-sm-12'} style={{border: '1px solid lightgray', borderRadius: '5px', padding: '0px'}} >
+					<div key={index} className={this.state.gridView ? 'col-md-3' : 'col-sm-12'} style={{padding: '0px'}} >
 						<Pokemon
 							pokemon={pokemon}
 							isFav={this.state.favorites.ids.indexOf(index) > -1}
 							clicked={(event) => this.favHandler(event, pokemon.name, index)} />
 					</div>
 				);
+			}
+			else {
+				return null;
 			}
 		});
 
@@ -238,6 +239,9 @@ class Pokemons extends Component {
 
 		return (
 			<table align='center' style={{border: '1px solid lightgray', margin: '10px', width: '100%'}}>
+				<thead>
+
+				</thead>
 				<tbody>
 					<tr>
 						<td>
@@ -266,6 +270,7 @@ class Pokemons extends Component {
 													<div className='row' style={{margin: '20px 0px 20px 0px'}}>
 														<div className='col-md-8'>
 															<input type='text'
+																className='PokemonSearch'
 																style={{height: '100%'}}
 																placeholder='Search'
 																onChange={this.searchPokemonHandler}
@@ -275,6 +280,7 @@ class Pokemons extends Component {
 															<select
 																onChange={this.pokemonTypeChangeHandler}
 																value={this.state.selectedType.value}
+																placeholder='Type'
 															>
 																{this.state.types.map((option, index) => {
 																	return (
@@ -289,8 +295,8 @@ class Pokemons extends Component {
 															</select>
 														</div>
 														<div className='col-md-2'>
-															<BsGrid3X2GapFill size='32' style={{color: 'lightgreen', cursor: 'pointer'}} onClick={this.gridViewHandler} />
-															<BsJustify size='32' style={{color: 'lightgreen', cursor: 'pointer'}} onClick={this.listViewHandler} />
+															<BsGrid3X2GapFill className='GridView' size='32' style={{color: 'darkcyan', cursor: 'pointer'}} onClick={this.gridViewHandler} />
+															<BsJustify className='ListView' size='32' style={{color: 'darkcyan', cursor: 'pointer'}} onClick={this.listViewHandler} />
 														</div>
 													</div>
 												</div>

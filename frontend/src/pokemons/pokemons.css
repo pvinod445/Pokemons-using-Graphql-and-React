@@ -44,11 +44,11 @@ select {
 
 button {
 	width: '100%';
-    border: 1px solid lightgreen;
+    border: 1px solid darkcyan;
     cursor:pointer;
     overflow: hidden;
 	outline:none;
-	color: lightgreen;
+	color: darkcyan;
 }
 
 select {
@@ -59,12 +59,12 @@ button.inActiveTab {
 	width: 100%;
 	display: block;
 	background-color: white;
-	color: lightgreen;
+	color: darkcyan;
 }
 
 button.activeTab {
 	width: 100%;
 	display: block;
-	background-color: lightgreen;
+	background-color: darkcyan;
 	color: white;
 }
