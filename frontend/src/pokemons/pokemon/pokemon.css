@@ -6,11 +6,11 @@
 	background-color: lightgray;
 }
 
-#favIcon {
+.favIcon {
 	display: inline-block;
 }
 
-#NonfavIcon {
+.NonfavIcon {
 	display: inline-block;
 	color: red;
 }

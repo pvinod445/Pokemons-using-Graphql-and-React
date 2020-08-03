@@ -44,14 +44,61 @@ class PokemonDetail extends Component {
 			{
 				pokemons(query: {limit: 10, offset: 0, search: "${pokemonName}"})
 				{
-					edges { id, name, image, maxCP, maxHP, types, weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
-			  }
+					edges { id, name, image, maxCP, maxHP, types, isFavorite ,weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
+			    }
 			}`
 		  }).then(response => {
 			this.setState({pokemon: response.data.pokemons.edges[0]});
 		}).catch(error => {
 			alert('Failed to reach the server. Please try again')
 		});
+	}
+
+	/**
+	 * Adds or removes pokemon to and from pokemon
+	 * @returns void
+	 */
+	favHandler = (e, pokemonName, id) => {
+		let favPokemons = this.state.favorites;
+		const cache = new InMemoryCache();
+		const link = new HttpLink({
+			uri: 'http://localhost:4000/graphql'
+		});
+
+		const client = new ApolloClient({
+			cache,
+			link
+		});
+
+		if(e.target.parentElement.parentElement.className === 'favIcon') {
+			client.mutate({
+				mutation: gql`
+					mutation {
+						unFavoritePokemon(id: "${id}") {id, isFavorite}
+					}`
+			}).then(response => {
+				let pokemon = this.state.pokemon;
+				pokemon['isFavorite'] = false;
+				this.setState({pokemon: pokemon});
+			});
+
+			alert(pokemonName + ' is removed from favorites.');
+		}
+		else {
+			client.mutate({
+				mutation: gql`
+					mutation {
+						favoritePokemon(id: "${id}") {id, isFavorite}
+				  	}`
+			}).then(response => {
+				let pokemon = this.state.pokemon;
+				pokemon['isFavorite'] = true;
+				this.setState({pokemon: pokemon});
+			});
+
+			alert(pokemonName + ' is added to favorites.');
+		}
+		this.setState({favorites: favPokemons});
 	}
 
 	render () {
@@ -74,7 +121,7 @@ class PokemonDetail extends Component {
 									<b>{evolution.name}</b>
 								</div>
 								<div className='col-3'>
-									<FiHeart id='favIcon' />
+									<FiHeart className='favIcon' />
 								</div>
 							</div>
 						</div>
@@ -90,7 +137,11 @@ class PokemonDetail extends Component {
 			pokemonDetail = (
 				<div>
 					<div id='pokeId'>
-						<Pokemon pokemon={this.state.pokemon} detail={true} isFav={queryParams.isFav} />
+						<Pokemon
+							pokemon={this.state.pokemon}
+							detail={true}
+							isFav={this.state.pokemon.isFavorite}
+							clicked={(event) => this.favHandler(event, this.state.pokemon.name, this.state.pokemon.id)} />
 					</div>
 					<br />
 					<div className='container-fluid' style={{width: '100%', padding: '0px 10px 0px 10px'}}>

@@ -35,10 +35,19 @@ class Pokemon extends Component {
 		let audioTag = null;
 		let audioSrc = 'http://localhost:4000/sounds/' + parseInt(this.props.pokemon.id);
 		if(this.props.isFav) {
-			favIcon = <FcLike  id='favIcon' onClick={this.props.clicked} />
+			favIcon = (
+				<div className='favIcon' onClick={this.props.clicked} >
+					<FcLike />
+				</div>
+
+			);
 		}
 		else {
-			favIcon = <FiHeart  id='NonfavIcon' onClick={this.props.clicked} />
+			favIcon = (
+				<div className='NonfavIcon' onClick={this.props.clicked} >
+					<FiHeart />
+				</div>
+			);
 		}
 
 		if(this.props.detail || this.state.isOpen) {

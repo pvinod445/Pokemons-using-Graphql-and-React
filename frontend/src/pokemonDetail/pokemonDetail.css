@@ -27,7 +27,7 @@ table#pokemonDetailTable {
 	margin: 0px;
 }
 
-#favIcon {
+.favIcon {
 	color: red;
 }
 

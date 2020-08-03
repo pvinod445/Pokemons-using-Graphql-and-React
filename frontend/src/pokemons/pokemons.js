@@ -58,21 +58,29 @@ class Pokemons extends Component {
 			{
 				pokemons(query: { limit: ${parseInt(this.state.currentOffset + 10)}, offset: 0})
 				{
-					edges { id, name, image, maxCP, maxHP, types, weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
+					edges { id, name, image, maxCP, maxHP, types, isFavorite, weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
 			  }
 			}`
 		}).then(response => {
 			let pokemonTypes = [''];
-
-			response.data.pokemons.edges.forEach(pokemon => {
+			let favorites = {
+				ids: [],
+				names:[]
+			};
+			response.data.pokemons.edges.forEach((pokemon, index) => {
 				pokemon.types.forEach(pokemonType => {
 					if(pokemonTypes.indexOf(pokemonType) < 0) {
 						pokemonTypes.push(pokemonType);
 					}
+					if(pokemon.isFavorite) {
+						if(favorites.ids.indexOf(index) < 0) {
+							favorites.ids.push(index);
+							favorites.names.push(pokemon.name);
+						}
+					}
 				});
-		});
-
-			this.setState({pokemons: response.data.pokemons.edges, types: pokemonTypes});
+			});
+			this.setState({pokemons: response.data.pokemons.edges, types: pokemonTypes, favorites: favorites});
 		}).catch(error => {
 			alert('Failed to reach the server. Please try again')
 		});
@@ -132,16 +140,49 @@ class Pokemons extends Component {
 	 * Adds or removes pokemon to and from pokemon
 	 * @returns void
 	 */
-	favHandler = (e, pokemonName, index) => {
+	favHandler = (e, pokemonName, index, id) => {
 		let favPokemons = this.state.favorites;
-		if(favPokemons.ids.indexOf(index) > -1) {
+		const cache = new InMemoryCache();
+		const link = new HttpLink({
+			uri: 'http://localhost:4000/graphql'
+		});
+
+		const client = new ApolloClient({
+			cache,
+			link
+		});
+
+		if(e.target.parentElement.parentElement.className === 'favIcon') {
+			client.mutate({
+				mutation: gql`
+					mutation {
+						unFavoritePokemon(id: "${id}") {id, isFavorite}
+					}`
+			}).then(response => {
+				let pokemons = this.state.pokemons;
+				pokemons[index]['isFavorite'] = false;
+				this.setState({pokemons: pokemons});
+			});
 			favPokemons.ids.splice(favPokemons.ids.indexOf(index), 1);
 			favPokemons.names.splice(favPokemons.names.indexOf(pokemonName), 1);
+			this.setState({favorites: favPokemons});
 			alert(pokemonName + ' is removed from favorites.');
 		}
 		else {
+			client.mutate({
+				mutation: gql`
+					mutation {
+						favoritePokemon(id: "${id}") {id, isFavorite}
+				  	}`
+			}).then(response => {
+				let pokemons = this.state.pokemons;
+				pokemons[index]['isFavorite'] = true;
+				this.setState({pokemons: pokemons});
+			});
+
 			favPokemons.ids.push(index);
-			favPokemons.names.push(pokemonName);
+			favPokemons.names.splice(pokemonName);
+			this.setState({favorites: favPokemons});
 			alert(pokemonName + ' is added to favorites.');
 		}
 		this.setState({favorites: favPokemons});
@@ -202,6 +243,7 @@ class Pokemons extends Component {
 	render () {
 		let pokemons = null;
 		let allPokemons = null;
+
 		if(this.state.favoritesTab) {
 			allPokemons = this.state.favorites.ids;
 		}
@@ -221,8 +263,8 @@ class Pokemons extends Component {
 					<div key={index} className={this.state.gridView ? 'col-md-3' : 'col-sm-12'} style={{padding: '0px'}} >
 						<Pokemon
 							pokemon={pokemon}
-							isFav={this.state.favorites.ids.indexOf(index) > -1}
-							clicked={(event) => this.favHandler(event, pokemon.name, index)} />
+							isFav={pokemon.isFavorite}
+							clicked={(event) => this.favHandler(event, pokemon.name, index, pokemon.id)} />
 					</div>
 				);
 			}
