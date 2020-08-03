@@ -35,6 +35,15 @@ button.ModalButton {
 	border-radius: 5px;
 }
 
+div.quickViewModalDialog {
+	max-width: 500px !important;
+	display: block;
+	margin: 0 auto;
+	text-align: center;
+	position: relative;
+    top: 15%;
+}
+
 button.CloseModalButton {
 	color: red;
 	border: none !important;

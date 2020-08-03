@@ -58,7 +58,7 @@ class Pokemons extends Component {
 			{
 				pokemons(query: { limit: ${parseInt(this.state.currentOffset + 10)}, offset: 0})
 				{
-					edges { name, image, maxCP, maxHP, types, weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
+					edges { id, name, image, maxCP, maxHP, types, weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
 			  }
 			}`
 		}).then(response => {
@@ -85,7 +85,7 @@ class Pokemons extends Component {
 	infiniteScrollHandler = () => {
 		const pokemonDataHeight = document.getElementById("bodyDiv");
 
-		if(typeof(pokemonDataHeight) !== null && typeof(pokemonDataHeight) !== undefined) {
+		if(pokemonDataHeight !== null && typeof(pokemonDataHeight) !== undefined) {
 			const pageHeight = Math.max(pokemonDataHeight.scrollHeight, pokemonDataHeight.offsetHeight);
 
 			if(parseInt(pageHeight) === parseInt(pokemonDataHeight.offsetHeight + pokemonDataHeight.scrollTop)) {

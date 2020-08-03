@@ -17,8 +17,8 @@ class Pokemon extends Component {
 	 * @returns void
 	 */
 	playAudio() {
-		const audioEl = document.getElementsByClassName("audio-element")[0]
-		audioEl.play()
+		const audioEl = document.getElementsByClassName("audio-element")[0];
+		audioEl.play();
 	}
 
 	/**
@@ -139,8 +139,13 @@ class Pokemon extends Component {
 							{audioTag}
 						</Link>
 						{!this.props.detail ? <button className='ModalButton' onClick={this.toggleModal}>QuicK View</button> : null}
-							<Modal isOpen={this.state.isOpen} onRequestClose={this.toggleModal}>
+							<Modal className="quickViewModalDialog" isOpen={this.state.isOpen} onRequestClose={this.toggleModal}>
 								<div className='container-fluid'>
+									<div>
+										<h4>
+											Quick View
+										</h4>
+									</div>
 									<div className='row' style={{height: '200px'}}>
 										<div className='col-12' style={{padding: '5px 10px 5px 10px'}}>
 											<img src={this.props.pokemon.image} alt='PokemonImage' height='100' width='100' />
