@@ -9,10 +9,8 @@ function App() {
   return (
     <div className="App">
 		<BrowserRouter>
-			<div className="App">
-				<Route path='/' exact component={Pokemons} />
-				<Route path='/:name' exact component={PokemonDetail} />
-			</div>
+			<Route path='/' exact component={Pokemons} />
+			<Route path='/:name' exact component={PokemonDetail} />
 		</BrowserRouter>
 
     </div>
