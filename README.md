@@ -7,7 +7,8 @@ As I have little knowledge about Vue JS. I have developed this in React (Approve
 Fork this repository and create your own exercise!
 
 ## Steps to Run the project
-Open terminal and follow the following steps
+- Clone the project
+- Open terminal and follow the following steps
 ```
 $ cd backend
 $ npm install
