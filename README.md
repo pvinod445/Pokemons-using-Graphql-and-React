@@ -6,6 +6,20 @@ As I have little knowledge about Vue JS. I have developed this in React (Approve
 
 Fork this repository and create your own exercise!
 
+## Steps to Run the project
+Open terminal and follow the following steps
+```
+$ cd backend
+$ npm install
+$ npm start
+```
+Open another terminal and follow the following steps
+```
+$ cd frontend
+$ npm install
+$ npm start
+```
+
 ## What we want you to build
 
 Your mission is to build a small [Pokedex](https://www.pokemon.com/us/pokedex/) application that looks similar to the next (but remember, you have freedom to express yourself!):
