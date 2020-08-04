@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import Loader from 'react-loader-spinner'
 import { Link } from 'react-router-dom';
-import queryString from 'query-string'
 
 import { FcLike } from 'react-icons/fc';
 import { FiHeart } from 'react-icons/fi';
@@ -15,13 +15,14 @@ class PokemonDetail extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			pokemon: null
+			pokemon: null,
+			isLoading: true,
 		}
 	}
 
 	async componentDidMount() {
 		let pokemonByName = await getPokemonByName(this.props.match.params.name);
-		this.setState({pokemon: pokemonByName})
+		this.setState({pokemon: pokemonByName, isLoading: false})
 	}
 
 	async componentDidUpdate(prevProps, prevState) {
@@ -57,7 +58,6 @@ class PokemonDetail extends Component {
 	}
 
 	render () {
-		const queryParams = queryString.parse(this.props.location.search);
 		let pokemonDetail = null;
 		let evolutions = null;
 		if(this.state.pokemon != null) {
@@ -131,7 +131,19 @@ class PokemonDetail extends Component {
 			pokemonDetail = <div>Loading.....</div>
 		}
 		return (
-			<div id='mainDiv'>
+			this.state.isLoading ?
+			(
+			<div style={{position: 'absolute', top: '40%', left: '50%'}}>
+					<Loader
+						type="Oval"
+						color="#00BFFF"
+						height={100}
+						width={100}
+					/>
+			</div>
+			)
+			:
+			(<div id='mainDiv'>
 				<div id='backButton'>
 					<Link
 						style={{textDecoration: 'none', color: 'black'}}
@@ -142,24 +154,24 @@ class PokemonDetail extends Component {
 					</Link>
 				</div>
 
-			<table id='pokemonDetailTable' align='center' style={{border: '1px solid lightgray', width: '100%'}}>
-				<tbody>
+				<table id='pokemonDetailTable' align='center' style={{border: '1px solid lightgray', width: '100%'}}>
+					<tbody>
 
-					<tr>
-						<td>
-							<div style={{borderBottom: '1px solid lightgray', width: '100%'}}>
-								<h2>Detail View</h2>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td id='grid'>
-							{pokemonDetail}
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			</div>
+						<tr>
+							<td>
+								<div style={{borderBottom: '1px solid lightgray', width: '100%'}}>
+									<h2>Detail View</h2>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td id='grid'>
+								{pokemonDetail}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>)
 		);
 	}
 }

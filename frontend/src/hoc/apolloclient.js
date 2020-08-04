@@ -4,7 +4,10 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import gql from 'graphql-tag';
 
-
+/**
+ * Creates Apollow Client which is used to query Graphql
+ * @returns void
+ */
 function createApolloClient() {
 	const cache = new InMemoryCache();
 	const link = new HttpLink({
