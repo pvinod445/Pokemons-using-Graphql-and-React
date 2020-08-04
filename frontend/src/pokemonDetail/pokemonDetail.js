@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import queryString from 'query-string'
 
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
-import gql from 'graphql-tag'
+import { FcLike } from 'react-icons/fc';
 import { FiHeart } from 'react-icons/fi';
 
 import Pokemon from '../pokemons/pokemon/pokemon';
+import { getPokemonByName } from '../hoc/apolloclient';
+import { favoritePokemon } from '../hoc/apolloclient';
+import { unFavoritePokemon } from '../hoc/apolloclient';
 import './pokemonDetail.css';
 
 class PokemonDetail extends Component {
@@ -19,86 +19,41 @@ class PokemonDetail extends Component {
 		}
 	}
 
-	componentDidMount() {
-		this.getPokemon();
+	async componentDidMount() {
+		let pokemonByName = await getPokemonByName(this.props.match.params.name);
+		this.setState({pokemon: pokemonByName})
 	}
 
-	/**
-	 * Fetches Pokemon in detail from the backend Service and Saves that in our local State using ApolloClient
-	 * @returns void
-	 */
-	getPokemon() {
-		const pokemonName = this.props.match.params.name;
-		const cache = new InMemoryCache();
-		const link = new HttpLink({
-			uri: 'http://localhost:4000/graphql'
-		  });
-
-		const client = new ApolloClient({
-			cache,
-			link
-		});
-
-		client.query({
-			query: gql`
-			{
-				pokemons(query: {limit: 10, offset: 0, search: "${pokemonName}"})
-				{
-					edges { id, name, image, maxCP, maxHP, types, isFavorite ,weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
-			    }
-			}`
-		  }).then(response => {
-			this.setState({pokemon: response.data.pokemons.edges[0]});
-		}).catch(error => {
-			alert('Failed to reach the server. Please try again')
-		});
+	async componentDidUpdate(prevProps, prevState) {
+		if(prevState.pokemon !== this.state.pokemon) {
+			let pokemonByName = await getPokemonByName(this.props.match.params.name);
+			this.setState({pokemon: pokemonByName})
+		}
 	}
 
 	/**
 	 * Adds or removes pokemon to and from pokemon
 	 * @returns void
 	 */
-	favHandler = (e, pokemonName, id) => {
-		let favPokemons = this.state.favorites;
-		const cache = new InMemoryCache();
-		const link = new HttpLink({
-			uri: 'http://localhost:4000/graphql'
-		});
-
-		const client = new ApolloClient({
-			cache,
-			link
-		});
-
+	favHandler = async (e, pokemonName, id) => {
 		if(e.target.parentElement.parentElement.className === 'favIcon') {
-			client.mutate({
-				mutation: gql`
-					mutation {
-						unFavoritePokemon(id: "${id}") {id, isFavorite}
-					}`
-			}).then(response => {
-				let pokemon = this.state.pokemon;
-				pokemon['isFavorite'] = false;
-				this.setState({pokemon: pokemon});
-			});
+			const removedFromFav = unFavoritePokemon(id);
 
 			alert(pokemonName + ' is removed from favorites.');
+			if(removedFromFav) {
+				let pokemonByName = await getPokemonByName(this.props.match.params.name);
+				this.setState({pokemon: pokemonByName})
+			}
 		}
 		else {
-			client.mutate({
-				mutation: gql`
-					mutation {
-						favoritePokemon(id: "${id}") {id, isFavorite}
-				  	}`
-			}).then(response => {
-				let pokemon = this.state.pokemon;
-				pokemon['isFavorite'] = true;
-				this.setState({pokemon: pokemon});
-			});
-
+			const addedToFav = favoritePokemon(id);
 			alert(pokemonName + ' is added to favorites.');
+
+			if(addedToFav) {
+				let pokemonByName = await getPokemonByName(this.props.match.params.name);
+				this.setState({pokemon: pokemonByName})
+			}
 		}
-		this.setState({favorites: favPokemons});
 	}
 
 	render () {
@@ -108,6 +63,22 @@ class PokemonDetail extends Component {
 		if(this.state.pokemon != null) {
 			if(this.state.pokemon.evolutions.length) {
 				evolutions = this.state.pokemon.evolutions.map((evolution, index) => {
+					let favIcon = null;
+					if(evolution.isFavorite) {
+						favIcon = (
+							<div className='favIcon' onClick={(event) => this.favHandler(event, evolution.name, evolution.id)} >
+								<FcLike />
+							</div>
+
+						);
+					}
+					else {
+						favIcon = (
+							<div className='NonfavIcon' onClick={(event) => this.favHandler(event, evolution.name, evolution.id)} >
+								<FiHeart />
+							</div>
+						);
+					}
 					return(
 						<div key={index} className='col-md-4' style={{border: '1px solid lightgray'}} >
 							<div className='row' style={{height: '200px'}}>
@@ -121,7 +92,7 @@ class PokemonDetail extends Component {
 									<b>{evolution.name}</b>
 								</div>
 								<div className='col-3'>
-									<FiHeart className='favIcon' />
+									{favIcon}
 								</div>
 							</div>
 						</div>

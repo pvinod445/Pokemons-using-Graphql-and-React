@@ -142,7 +142,6 @@ class Pokemon extends Component {
 							params={{ favNames: this.props.favNames }}
 							to={{
 								pathname: '/'+this.props.pokemon.name,
-								search: '?isFav='+this.props.isFav
 							}} >
 							<img src={this.props.pokemon.image} alt='PokemonImage' height='100' width='100' />
 							{audioTag}

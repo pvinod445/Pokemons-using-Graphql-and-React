@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
-import gql from 'graphql-tag'
 import { BsGrid3X2GapFill, BsJustify } from "react-icons/bs";
 
 import Pokemon from './pokemon/pokemon';
+import { getPokemons } from '../hoc/apolloclient';
+import { favoritePokemon } from '../hoc/apolloclient';
+import { unFavoritePokemon } from '../hoc/apolloclient';
+import { getPokemonTypes } from '../hoc/apolloclient';
 import './pokemons.css';
 
 class Pokemons extends Component {
@@ -13,13 +13,9 @@ class Pokemons extends Component {
 		super(props);
 		this.state = {
 			pokemons: [],
-			types: [],
+			pokemonTypes: [],
 			searchedPokemon: '',
 			selectedType: {value: '', label: ''},
-			favorites: {
-				ids: [],
-				names: []
-			},
 			gridView: true,
 			favoritesTab: false,
 			currentOffset: 0
@@ -27,63 +23,23 @@ class Pokemons extends Component {
 
 	}
 
-	componentDidMount() {
-		this.getPokemons();
+	async componentDidMount() {
+		let pokemons = await await getPokemons(this.state.currentOffset, this.state.searchedPokemon, this.state.selectedType.value, this.state.favoritesTab);
+		let pokemonTypes = await getPokemonTypes();
+		this.setState({pokemons: pokemons, pokemonTypes: pokemonTypes});
 		window.addEventListener('scroll', this.infiniteScrollHandler, true);
 	}
 
-	componentDidUpdate(prevProps, prevState) {
-		if(this.state.pokemons.length === 0 || prevState.currentOffset !== this.state.currentOffset) {
-			this.getPokemons();
+	async componentDidUpdate(prevProps, prevState) {
+		if(this.state.pokemons.length === 0 ||
+			prevState.currentOffset !== this.state.currentOffset ||
+			prevState.searchedPokemon !== this.state.searchedPokemon ||
+			prevState.selectedType !== this.state.selectedType ||
+			prevState.favoritesTab !== this.state.favoritesTab
+			) {
+			const pokemons = await getPokemons(this.state.currentOffset, this.state.searchedPokemon, this.state.selectedType.value, this.state.favoritesTab);
+			this.setState({pokemons: pokemons});
 		}
-	}
-
-	/**
-	 * Fetches Pokemon from the backend Service and Saves that in our local State using ApolloClient
-	 * @returns void
-	 */
-	getPokemons() {
-		const cache = new InMemoryCache();
-		const link = new HttpLink({
-			uri: 'http://localhost:4000/graphql'
-		});
-
-		const client = new ApolloClient({
-			cache,
-			link
-		});
-
-		client.query({
-			query: gql`
-			{
-				pokemons(query: { limit: ${parseInt(this.state.currentOffset + 10)}, offset: 0})
-				{
-					edges { id, name, image, maxCP, maxHP, types, isFavorite, weight{minimum, maximum}, height{minimum, maximum}, evolutions{name, image} }
-			  }
-			}`
-		}).then(response => {
-			let pokemonTypes = [''];
-			let favorites = {
-				ids: [],
-				names:[]
-			};
-			response.data.pokemons.edges.forEach((pokemon, index) => {
-				pokemon.types.forEach(pokemonType => {
-					if(pokemonTypes.indexOf(pokemonType) < 0) {
-						pokemonTypes.push(pokemonType);
-					}
-					if(pokemon.isFavorite) {
-						if(favorites.ids.indexOf(index) < 0) {
-							favorites.ids.push(index);
-							favorites.names.push(pokemon.name);
-						}
-					}
-				});
-			});
-			this.setState({pokemons: response.data.pokemons.edges, types: pokemonTypes, favorites: favorites});
-		}).catch(error => {
-			alert('Failed to reach the server. Please try again')
-		});
 	}
 
 	/**
@@ -140,52 +96,26 @@ class Pokemons extends Component {
 	 * Adds or removes pokemon to and from pokemon
 	 * @returns void
 	 */
-	favHandler = (e, pokemonName, index, id) => {
-		let favPokemons = this.state.favorites;
-		const cache = new InMemoryCache();
-		const link = new HttpLink({
-			uri: 'http://localhost:4000/graphql'
-		});
-
-		const client = new ApolloClient({
-			cache,
-			link
-		});
-
+	favHandler = async (e, pokemonName, id) => {
+		let pokemons = null;
 		if(e.target.parentElement.parentElement.className === 'favIcon') {
-			client.mutate({
-				mutation: gql`
-					mutation {
-						unFavoritePokemon(id: "${id}") {id, isFavorite}
-					}`
-			}).then(response => {
-				let pokemons = this.state.pokemons;
-				pokemons[index]['isFavorite'] = false;
-				this.setState({pokemons: pokemons});
-			});
-			favPokemons.ids.splice(favPokemons.ids.indexOf(index), 1);
-			favPokemons.names.splice(favPokemons.names.indexOf(pokemonName), 1);
-			this.setState({favorites: favPokemons});
+			const removedFromFav = unFavoritePokemon(id);
+
 			alert(pokemonName + ' is removed from favorites.');
+			if(removedFromFav) {
+				pokemons = await getPokemons(this.state.currentOffset, this.state.searchedPokemon, this.state.selectedType.value, this.state.favoritesTab);
+				this.setState({pokemons: pokemons});
+			}
 		}
 		else {
-			client.mutate({
-				mutation: gql`
-					mutation {
-						favoritePokemon(id: "${id}") {id, isFavorite}
-				  	}`
-			}).then(response => {
-				let pokemons = this.state.pokemons;
-				pokemons[index]['isFavorite'] = true;
-				this.setState({pokemons: pokemons});
-			});
-
-			favPokemons.ids.push(index);
-			favPokemons.names.splice(pokemonName);
-			this.setState({favorites: favPokemons});
+			const addedToFav = favoritePokemon(id);
 			alert(pokemonName + ' is added to favorites.');
+
+			if(addedToFav) {
+				pokemons = await getPokemons(this.state.currentOffset, this.state.searchedPokemon, this.state.selectedType.value, this.state.favoritesTab);
+				this.setState({pokemons: pokemons});
+			}
 		}
-		this.setState({favorites: favPokemons});
 	}
 
 	/**
@@ -201,70 +131,18 @@ class Pokemons extends Component {
 		}
 	}
 
-	/**
-	 * Filters pokemon based on dropdown and search field
-	 * @returns void
-	 */
-	filterCriterial = (pokemon, pokemonType) => {
-		if(this.state.searchedPokemon == null && pokemonType === '') {
-			return true;
-		}
-
-		if(this.state.searchedPokemon !== '') {
-
-			if(pokemon.name.indexOf(this.state.searchedPokemon) > -1) {
-				if(pokemonType !== '') {
-					if(pokemon.types.indexOf(pokemonType) > -1) {
-						return true;
-					}
-					else {
-						return false;
-					}
-				}
-				return true;
-			}
-
-			return false;
-		}
-		else {
-			if(pokemonType !== '') {
-				if(pokemon.types.indexOf(pokemonType) > -1) {
-					return true;
-				}
-				else {
-					return false;
-				}
-			}
-			return true;
-		}
-
-	}
-
 	render () {
 		let pokemons = null;
-		let allPokemons = null;
+		const allPokemons = this.state.pokemons;
 
-		if(this.state.favoritesTab) {
-			allPokemons = this.state.favorites.ids;
-		}
-		else {
-			allPokemons = this.state.pokemons;
-		}
-		pokemons = allPokemons.map((each, index) => {
-			let pokemon = null;
-			if(this.state.favoritesTab) {
-				pokemon = this.state.pokemons[each];
-			}
-			else {
-				pokemon = each;
-			}
-			if(pokemon != null && this.filterCriterial(pokemon, this.state.selectedType.value)) {
+		pokemons = allPokemons.map((pokemon, index) => {
+			if(pokemon != null) {
 				return (
 					<div key={index} className={this.state.gridView ? 'col-md-3' : 'col-sm-12'} style={{padding: '0px'}} >
 						<Pokemon
 							pokemon={pokemon}
 							isFav={pokemon.isFavorite}
-							clicked={(event) => this.favHandler(event, pokemon.name, index, pokemon.id)} />
+							clicked={(event) => this.favHandler(event, pokemon.name, pokemon.id)} />
 					</div>
 				);
 			}
@@ -273,11 +151,6 @@ class Pokemons extends Component {
 			}
 		});
 
-		const typeDropdownChoices = [];
-		typeDropdownChoices.push({value: '', label: ''})
-		this.state.types.forEach((type, index) => {
-			typeDropdownChoices.push({value: type, label: type})
-		});
 
 		return (
 			<table align='center' style={{border: '1px solid lightgray', margin: '10px', width: '100%'}}>
@@ -324,7 +197,7 @@ class Pokemons extends Component {
 																value={this.state.selectedType.value}
 																placeholder='Type'
 															>
-																{this.state.types.map((option, index) => {
+																{this.state.pokemonTypes.map((option, index) => {
 																	return (
 																		<option
 																			key={index}

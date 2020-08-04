@@ -2,6 +2,8 @@
 
 This repository contains a coding exercise for new developers joining the frontend development team. This version is focused in Vue.
 
+As I have little knowledge about Vue JS. I have developed this in React (Approved by Jennifer Steckley)
+
 Fork this repository and create your own exercise!
 
 ## What we want you to build
@@ -54,7 +56,7 @@ query { pokemons(query: { limit: 10, offset: 0 }) { edges { name } } }
 ### Frontend (`/frontend`)
 Within the folder frontend there is a simple boilerplate of a Vue app, created using the Vue CLI and based on the default Sites preset which includes: vue-router, vuex, sass, babel, eslint, unit-jest, e2e-cypress. Feel free to change this folder as you wish.
 
-To run the frontend: 
+To run the frontend:
 
 ```
 $ cd frontend
