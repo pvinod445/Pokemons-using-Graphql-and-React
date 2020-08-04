@@ -61,7 +61,7 @@ To run the frontend:
 ```
 $ cd frontend
 $ npm install
-$ npm run serve
+$ npm start
 ```
 
 Access your application within http://localhost:8080/.
