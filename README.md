@@ -8,13 +8,14 @@ Fork this repository and create your own exercise!
 
 ## Steps to Run the project
 - Clone the project
+- Navigate to that path(where project is cloned) in terminal
 - Open terminal and follow the following steps
 ```
 $ cd backend
 $ npm install
 $ npm start
 ```
-Open another terminal and follow the following steps
+- Open another terminal and follow the following steps
 ```
 $ cd frontend
 $ npm install
